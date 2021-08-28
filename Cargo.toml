@@ -1,8 +1,8 @@
 [package]
-authors = ["LongYinan <lynweklm@gmail.com>"]
+authors = ["Overlook Motel <theoverlookmotel@gmail.com>"]
 edition = "2018"
 name = "napi-experiment"
-version = "0.1.0"
+version = "0.0.1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

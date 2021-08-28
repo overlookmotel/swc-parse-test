@@ -1,12 +1,41 @@
 {
   "name": "@overlookmotel/swc-parse-test",
-  "version": "1.0.0",
-  "description": "Template project for writing node package with napi-rs",
+  "version": "0.0.1",
+  "description": "SWC parse experiments",
   "main": "index.js",
-  "repository": "git@github.com:napi-rs/experiment.git",
-  "license": "MIT",
-  "keywords": ["napi-rs", "NAPI", "N-API", "Rust", "node-addon", "node-addon-api"],
-  "files": ["index.d.ts", "index.js"],
+  "files": [
+    "index.js"
+  ],
+  "author": {
+    "name": "Overlook Motel"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/overlookmotel/swc-parse-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/overlookmotel/swc-parse-test/issues"
+  },
+  "dependencies": {
+    "@node-rs/helper": "^1.2.1"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^1.2.1",
+    "@overlookmotel/eslint-config": "^9.0.7",
+    "@overlookmotel/eslint-config-node": "^3.0.1",
+    "benny": "^3.6.15",
+    "eslint": "^7.32.0"
+  },
+  "scripts": {
+    "artifacts": "napi artifacts",
+    "bench": "node benchmark/bench.mjs",
+    "build": "napi build --platform",
+    "build:prod": "napi build --platform --release",
+    "format": "cargo fmt",
+    "lint": "eslint .",
+    "prepublishOnly": "napi prepublish -t npm",
+    "version": "napi version"
+  },
   "napi": {
     "name": "experiment",
     "triples": {
@@ -25,69 +54,12 @@
     }
   },
   "engines": {
-    "node": ">= 10"
+    "node": ">=16"
   },
+  "readmeFilename": "README.md",
+  "license": "MIT",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
-  },
-  "scripts": {
-    "artifacts": "napi artifacts",
-    "bench": "node -r @swc-node/register benchmark/bench.ts",
-    "build": "napi build --platform --release",
-    "build:debug": "napi build --platform",
-    "format": "run-p format:md format:json format:yaml format:source format:rs",
-    "format:md": "prettier --parser markdown --write './**/*.md'",
-    "format:json": "prettier --parser json --write './**/*.json'",
-    "format:rs": "cargo fmt",
-    "format:source": "prettier --config ./package.json --write './**/*.{js,ts}'",
-    "format:yaml": "prettier --parser yaml --write './**/*.{yml,yaml}'",
-    "lint": "eslint . -c ./.eslintrc.yml './**/*.{ts,tsx,js}'",
-    "prepublishOnly": "napi prepublish -t npm",
-    "test": "ava",
-    "version": "napi version"
-  },
-  "devDependencies": {
-    "@napi-rs/cli": "^1.2.1",
-    "@swc-node/register": "^1.3.3",
-    "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.2",
-    "ava": "^3.15.0",
-    "benny": "^3.6.15",
-    "chalk": "^4.1.2",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.24.1",
-    "eslint-plugin-prettier": "^3.4.1",
-    "eslint-plugin-sonarjs": "^0.10.0",
-    "husky": "^7.0.1",
-    "lint-staged": "^11.1.2",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^2.3.2",
-    "typescript": "^4.3.5"
-  },
-  "dependencies": {
-    "@node-rs/helper": "^1.2.1"
-  },
-  "lint-staged": {
-    "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
-    "*.@(yml|yaml)": ["prettier --parser yaml --write"],
-    "*.md": ["prettier --parser markdown --write"],
-    "*.json": ["prettier --parser json --write"]
-  },
-  "ava": {
-    "require": ["@swc-node/register"],
-    "extensions": ["ts"],
-    "environmentVariables": {
-      "TS_NODE_PROJECT": "./tsconfig.json"
-    }
-  },
-  "prettier": {
-    "printWidth": 120,
-    "semi": false,
-    "trailingComma": "all",
-    "singleQuote": true,
-    "arrowParens": "always",
-    "parser": "typescript"
   }
 }

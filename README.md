@@ -1,4 +1,4 @@
-# `@overlookmotel/napi-rs-test`
+# `@overlookmotel/swc-parse-test`
 
 ![https://github.com/napi-rs/experiment/actions](https://github.com/napi-rs/experiment/workflows/CI/badge.svg)
 
@@ -7,7 +7,7 @@
 ## Install this test package
 
 ```
-yarn add @overlookmotel/napi-rs-test
+yarn add @overlookmotel/swc-parse-test
 ```
 
 ## Support matrix
@@ -53,7 +53,7 @@ The other problem is how to deliver prebuild `binary` to users. Download it in `
 
 In this package we choose a better way to solve this problem. We release different `npm packages` for different platform. And add it to `optionalDependencies` before release the `Major` package to npm.
 
-`NPM` will choose which native package should download from `registry` automatically. You can see [npm](./npm) dir for details. And you can also run `yarn add @overlookmotel/napi-rs-test` to see how it works.
+`NPM` will choose which native package should download from `registry` automatically. You can see [npm](./npm) dir for details. And you can also run `yarn add @overlookmotel/swc-parse-test` to see how it works.
 
 ## Develop requirements
 

@@ -1,5 +1,9 @@
-const { sync } = require('./index')
+/* eslint-disable no-console */
 
-console.assert(sync(0) === 100, 'Simple test failed')
+'use strict';
 
-console.info('Simple test passed')
+const {sync} = require('./index.js');
+
+console.assert(sync(0) === 100, 'Simple test failed');
+
+console.info('Simple test passed');
