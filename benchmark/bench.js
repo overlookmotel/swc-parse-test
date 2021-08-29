@@ -2,29 +2,68 @@
 
 const b = require('benny'); // eslint-disable-line import/no-extraneous-dependencies
 
-const {sync} = require('../index.js');
+const swcParse = require('@swc/core').parseSync,
+	babelParse = require('@babel/parser').parse,
+	filesize = require('filesize'),
+	createJs = require('../lib/createJs.js'),
+	swcParseRaw = require('../lib/swcParseRaw.js'),
+	parseJson = require('../lib/parseJson.js'),
+	{
+		parseSync: experimentParse,
+		parseToBuffer,
+		parseToObject
+	} = require('../lib/addon.js');
 
-function add(a) {
-	return a + 100;
-}
+async function run(numLines) {
+	const js = createJs(numLines);
 
-async function run() {
 	await b.suite(
-		'Add 100',
+		`${numLines} lines (${filesize(js.length)})`,
 
-		b.add('Native a + 100', () => {
-			sync(10);
+		b.add('swc', () => {
+			swcParse(js);
 		}),
 
-		b.add('JavaScript a + 100', () => {
-			add(10);
+		b.add('swc (without deserialization)', () => {
+			swcParseRaw(js);
+		}),
+
+		b.add('experiment 1 - swc with custom JSON parser', () => {
+			parseJson(swcParseRaw(js));
+		}),
+
+		b.add('experiment 2 - buffer', () => {
+			experimentParse(js);
+		}),
+
+		b.add('experiment 2 - buffer (without deserialization)', () => {
+			parseToBuffer(js);
+		}),
+
+		b.add('experiment 3 - object', () => {
+			parseToObject(js);
+		}),
+
+		b.add('babel', () => {
+			babelParse(js);
 		}),
 
 		b.cycle(),
-		b.complete()
+		b.complete(),
+
+		b.save({
+			file: `${numLines} lines`,
+			folder: __dirname,
+			details: true,
+			format: 'chart.html'
+		})
 	);
 }
 
-run().catch((e) => {
-	console.error(e); // eslint-disable-line no-console
+(async () => {
+	await run(100);
+	await run(1000);
+	await run(10000);
+})().catch((e) => {
+	console.log('ERROR:', e); // eslint-disable-line no-console
 });

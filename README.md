@@ -1,97 +1,72 @@
-# `@overlookmotel/swc-parse-test`
+# SWC parse experiments
 
-![https://github.com/napi-rs/experiment/actions](https://github.com/napi-rs/experiment/workflows/CI/badge.svg)
+These are some experiments attempting to speed up SWC's `.parse()` method.
 
-> Template project for writing node package with napi-rs.
+TLDR: One of these experiments is quite successful:
 
-## Install this test package
+![1000 lines](./doc/images/1000_lines_brief.png)
 
-```
-yarn add @overlookmotel/swc-parse-test
-```
+SWC's parser is extremely fast. However, `swc.parse()` / `swc.parseSync()` is slow.
 
-## Support matrix
+## The problem
 
-### Operating Systems
+There seem to be 2 bottlenecks:
 
-|                  | node12 | node14 | node16 |
-| ---------------- | ------ | ------ | ------ |
-| Windows x64      | ✓      | ✓      | ✓      |
-| Windows x32      | ✓      | ✓      | ✓      |
-| Windows arm64    | ✓      | ✓      | ✓      |
-| macOS x64        | ✓      | ✓      | ✓      |
-| macOS arm64      | ✓      | ✓      | ✓      |
-| Linux x64 gnu    | ✓      | ✓      | ✓      |
-| Linux x64 musl   | ✓      | ✓      | ✓      |
-| Linux arm gnu    | ✓      | ✓      | ✓      |
-| Linux arm64 gnu  | ✓      | ✓      | ✓      |
-| Linux arm64 musl | ✓      | ✓      | ✓      |
-| Android arm64    | ✓      | ✓      | ✓      |
-| FreeBSD x64      | ✓      | ✓      | ✓      |
+1. Cost of passing AST from Rust to JS (as JSON string)
+2. Cost of parsing JSON in JS (using `JSON.parse()`)
 
-## Ability
+## Attempted solutions
 
-### Build
+I have tried 3 different experiments.
 
-After `yarn build/npm run build` command, you can see `experiment.[darwin|win32|linux].node` file in project root. This is the native addon built from [lib.rs](./src/lib.rs).
+These are all proof of concept only. Implementations shown here can only handle a very limited subset of JavaScript (a sequence of `const x = 1;` statements).
 
-### Test
+NB Apologies for the poor quality of the Rust code! Before this weekend, I'd never written a line of Rust in my life.
 
-With [ava](https://github.com/avajs/ava), run `yarn test/npm run test` to testing native addon. You can also switch to another testing framework if you want.
+### Experiment 1: Custom JSON parser
 
-### CI
+The shape of the JSON is predictable, therefore a lot of the work `JSON.parse()` does is redundant.
 
-With github actions, every commits and pull request will be built and tested automatically in [`node@12`, `node@14`, `@node16`] x [`macOS`, `Linux`, `Windows`] matrix. You will never be afraid of the native addon broken in these platforms.
+I wrote a [custom JSON parser](./blob/master/lib/parseJson.js) and substituted it for `JSON.parse()`.
 
-### Release
+This produces approx 30% speed-up.
 
-Release native package is very difficult in old days. Native packages may ask developers who use its to install `build toolchain` like `gcc/llvm` , `node-gyp` or something more.
+### Experiment 2: Binary serialization
 
-With `Github actions`, we can easily prebuild `binary` for major platforms. And with `N-API`, we should never afraid of **ABI Compatible**.
+Instead of outputting a JSON string from Rust, output a binary serialization of the AST as a `JsBuffer`.
 
-The other problem is how to deliver prebuild `binary` to users. Download it in `postinstall` script is a common way which most packages do it right now. The problem of this solution is it introduced many other packages to download binary which has not been used by `runtime codes`. The other problem is some user may not easily download the binary from `github/CDN` if they are behind private network (But in most case, they have a private NPM mirror).
+This has 2 advantages:
 
-In this package we choose a better way to solve this problem. We release different `npm packages` for different platform. And add it to `optionalDependencies` before release the `Major` package to npm.
+1. `JsBuffer` can be created in main thread's memory so passing it from Rust to JS is zero cost.
+2. AST can be encoded more efficiently in binary form.
 
-`NPM` will choose which native package should download from `registry` automatically. You can see [npm](./npm) dir for details. And you can also run `yarn add @overlookmotel/swc-parse-test` to see how it works.
+This produces approx **5x speed-up**, especially with longer inputs. It achieves a speed faster than Babel.
 
-## Develop requirements
+Both the Rust and JS code is not at all optimized - with futher work, I imagine speed could be further improved.
 
-- Install latest `Rust`
-- Install `Node.js@10+` which fully supported `Node-API`
-- Install `yarn@1.x`
+See [Rust serializer](./blob/master/src/lib.rs) and [JS buffer deserializer](./blob/master/lib/buffer/bufferToAst.js).
 
-## Test in local
+### Experiment 3: Create AST as `JsObject` in Rust
 
-- yarn
-- yarn build
-- yarn test
+Create AST as `JsObject` in Rust, avoiding serialization/deserialization entirely.
 
-And you will see:
+Abject failure. Much slower than original SWC.
 
-```bash
-$ ava --verbose
+## Benchmarks
 
-  ✔ sync function from native code
-  ✔ sleep function from native code (201ms)
-  ─
+Benchmarks with different lengths of input JS.
 
-  2 tests passed
-✨  Done in 1.12s.
+```sh
+npm install
+npm run build
+npm test
+npm run bench
 ```
 
-## Release package
+NB: `swc (without deserialization)` and `experiment 2 - buffer (without deserialization)` are not complete. The first returns only a JSON string, the 2nd only a buffer representation of AST. I've included these only as it's interesting to see where the time is going.
 
-Ensure you have set you **NPM_TOKEN** in `Github` project setting.
+Note how slow SWC is on larger files even without deserializing the JSON - indicating the high cost of passing a large JSON string from Rust to JS.
 
-In `Settings -> Secrets`, add **NPM_TOKEN** into it.
-
-When you want release package:
-
-```
-yarn version [xxx]
-
-git push --follow-tags
-```
-
-Github actions will do the rest job for you.
+![100 lines](./doc/images/100_lines.png)
+![1000 lines](./doc/images/1000_lines.png)
+![10000 lines](./doc/images/10000_lines.png)

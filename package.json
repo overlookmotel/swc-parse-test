@@ -17,7 +17,10 @@
     "url": "https://github.com/overlookmotel/swc-parse-test/issues"
   },
   "dependencies": {
-    "@node-rs/helper": "^1.2.1"
+    "@babel/parser": "^7.15.3",
+    "@node-rs/helper": "^1.2.1",
+    "@swc/core": "^1.2.83",
+    "filesize": "^8.0.0"
   },
   "devDependencies": {
     "@napi-rs/cli": "^1.2.1",
@@ -28,13 +31,14 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "bench": "node benchmark/bench.mjs",
-    "build": "napi build --platform",
-    "build:prod": "napi build --platform --release",
+    "bench": "node benchmark/bench.js",
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
     "format": "cargo fmt",
     "lint": "eslint .",
     "prepublishOnly": "napi prepublish -t npm",
-    "version": "napi version"
+    "version": "napi version",
+    "test": "node ./test/buffer.js && node ./test/object.js"
   },
   "napi": {
     "name": "experiment",
