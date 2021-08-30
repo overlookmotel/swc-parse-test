@@ -11,7 +11,8 @@ const swcParse = require('@swc/core').parseSync,
 	{
 		parseSync: experimentParse,
 		parseToBuffer,
-		parseToObject
+		parseToObject,
+		parseToBuffers
 	} = require('../lib/addon.js');
 
 async function run(numLines) {
@@ -42,6 +43,10 @@ async function run(numLines) {
 
 		b.add('experiment 3 - object', () => {
 			parseToObject(js);
+		}),
+
+		b.add('experiment 4 - many buffers', () => {
+			parseToBuffers(js);
 		}),
 
 		b.add('babel', () => {
