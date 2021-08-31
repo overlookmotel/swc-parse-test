@@ -88,9 +88,9 @@ pub fn parse_to_object(ctx: CallContext) -> Result<JsObject> {
 }
 
 fn create_span(&env: &Env, start: u32, end: u32) -> JsObject {
-  let mut span = env.create_object().expect("");
-  span.set_named_property("start", env.create_uint32(start).expect("")).expect("");
-  span.set_named_property("end", env.create_uint32(end).expect("")).expect("");
-  span.set_named_property("ctxt", env.create_uint32(0).expect("")).expect("");
+  let mut span = env.create_object().unwrap();
+  span.set_named_property("start", env.create_uint32(start).unwrap()).unwrap();
+  span.set_named_property("end", env.create_uint32(end).unwrap()).unwrap();
+  span.set_named_property("ctxt", env.create_uint32(0).unwrap()).unwrap();
   span
 }
