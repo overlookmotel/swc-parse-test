@@ -27,7 +27,7 @@ NB Apologies for the poor quality of the Rust code! Before this weekend, I'd nev
 
 The shape of the JSON is predictable, therefore a lot of the work `JSON.parse()` does is redundant.
 
-I wrote a [custom JSON parser](./blob/master/lib/parseJson.js) and substituted it for `JSON.parse()`.
+I wrote a [custom JSON parser](./lib/parseJson.js) and substituted it for `JSON.parse()`.
 
 This produces approx 30% speed-up.
 
@@ -44,7 +44,7 @@ This produces approx **5x speed-up**, especially with longer inputs. It achieves
 
 Both the Rust and JS code is not at all optimized - with futher work, I imagine speed could be further improved.
 
-See [Rust serializer](./blob/master/src/to_buffer.rs) and [JS buffer deserializer](./blob/master/lib/buffer/bufferToAst.js).
+See [Rust serializer](./src/to_buffer.rs) and [JS buffer deserializer](./lib/buffer/bufferToAst.js).
 
 ### Experiment 3: Create AST as `JsObject` in Rust
 
