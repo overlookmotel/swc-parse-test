@@ -19,7 +19,7 @@
   "dependencies": {
     "@babel/parser": "^7.15.7",
     "@node-rs/helper": "^1.2.1",
-    "@swc/core": "^1.2.84",
+    "@swc/core": "^1.2.88",
     "filesize": "^8.0.0"
   },
   "devDependencies": {
