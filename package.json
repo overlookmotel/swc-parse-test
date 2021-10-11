@@ -17,7 +17,7 @@
     "url": "https://github.com/overlookmotel/swc-parse-test/issues"
   },
   "dependencies": {
-    "@babel/parser": "^7.15.7",
+    "@babel/parser": "^7.15.8",
     "@node-rs/helper": "^1.2.1",
     "@swc/core": "^1.2.93",
     "filesize": "^8.0.3"
