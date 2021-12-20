@@ -10,7 +10,7 @@ version = "0.0.1"
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = "1"
+napi = "2"
 napi-derive = "2"
 regex = "1.5"
 
