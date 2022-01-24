@@ -23,7 +23,7 @@
     "filesize": "^8.0.6"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^2.4.0",
+    "@napi-rs/cli": "^2.4.2",
     "@overlookmotel/eslint-config": "^9.0.7",
     "@overlookmotel/eslint-config-node": "^3.0.1",
     "benny": "^3.7.1",
